@@ -1,0 +1,206 @@
+const problemasPorNivel = {
+    1: [{ a: 5, b: 3, c: 8 }, { a: 7, b: 2, c: 9 }, { a: 4, b: 4, c: 8 }, { a: 6, b: 3, c: 9 }, { a: 2, b: 7, c: 9 }],
+    2: [{ a: 12, b: 5, c: 17 }, { a: 21, b: 13, c: 34 }, { a: 14, b: 4, c: 18 }, { a: 32, b: 12, c: 44 }, { a: 15, b: 11, c: 26 }],
+    3: [{ a: 18, b: 7, c: 25 }, { a: 25, b: 6, c: 31 }, { a: 19, b: 5, c: 24 }, { a: 16, b: 8, c: 24 }, { a: 27, b: 5, c: 32 }]
+};
+
+let nombreJugador = "";
+let nivelActual = 1;
+let puntos = 0;
+let vidas = 3;
+let ejercicioActual = null;
+let tiempoPercent = 100;
+let relojInterval = null;
+
+// MOTOR DE AUDIO INCORPORADO DE FORMA NATIVA
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+function reproducirSonido(tipo) {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+
+    if (tipo === "correcto") {
+        osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // Do5
+        osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1); // Mi5
+        gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.25);
+    } else {
+        osc.type = "triangle";
+        osc.frequency.setValueAtTime(130.81, audioCtx.currentTime); // Do3
+        gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.35);
+    }
+}
+
+function validarEIniciar() {
+    const input = document.getElementById("nombre-jugador").value.trim();
+    if(input === "") {
+        alert("¡Escribe tu nombre para empezar, amiguito(a)! 😊");
+        return;
+    }
+    nombreJugador = input;
+    
+    document.getElementById("pantalla-inicio").classList.add("oculto");
+    document.getElementById("pantalla-juego").classList.remove("oculto");
+    
+    nivelActual = 1;
+    puntos = 0;
+    vidas = 3;
+    
+    actualizarMarcadorVidas();
+    cargarNuevoDesafio();
+}
+
+function cargarNuevoDesafio() {
+    clearInterval(relojInterval);
+    tiempoPercent = 100;
+    document.getElementById("barra-tiempo").style.width = "100%";
+    
+    if (puntos >= 10 && puntos < 20) nivelActual = 2;
+    if (puntos >= 20) nivelActual = 3;
+    if (puntos >= 30) {
+        terminarPartida(true);
+        return;
+    }
+
+    document.getElementById("txt-nivel").textContent = nivelActual;
+    document.getElementById("txt-puntos").textContent = puntos;
+
+    document.getElementById("vicuna-avatar").textContent = "🦙";
+    document.getElementById("vicuna-avatar").style.transform = "scale(1)";
+    document.getElementById("burbuja-dialogo").textContent = `¡Vamos ${nombreJugador}, tú puedes!`;
+
+    const lista = problemasPorNivel[nivelActual];
+    ejercicioActual = lista[Math.floor(Math.random() * lista.length)];
+
+    document.getElementById("enunciado-pregunta").textContent = `${ejercicioActual.a} + ${ejercicioActual.b}`;
+    
+    generarOpciones(ejercicioActual.c);
+    iniciarCuentaRegresiva();
+}
+
+function generarOpciones(respuestaCorrecta) {
+    const contenedor = document.getElementById("contenedor-opciones");
+    contenedor.innerHTML = "";
+
+    let opciones = [respuestaCorrecta];
+    while(opciones.length < 4) {
+        let desvio = Math.floor(Math.random() * 5) + 1;
+        let falsa = Math.random() > 0.5 ? respuestaCorrecta + desvio : respuestaCorrecta - desvio;
+        if(falsa > 0 && !opciones.includes(falsa)) opciones.push(falsa);
+    }
+    opciones.sort(() => Math.random() - 0.5);
+
+    opciones.forEach(num => {
+        const btn = document.createElement("button");
+        btn.className = "btn-opcion";
+        btn.textContent = num;
+        btn.onclick = () => procesarRespuesta(num);
+        contenedor.appendChild(btn);
+    });
+}
+
+function iniciarCuentaRegresiva() {
+    const tick = nivelActual === 1 ? 150 : nivelActual === 2 ? 200 : 250;
+    
+    relojInterval = setInterval(() => {
+        tiempoPercent -= 1;
+        document.getElementById("barra-tiempo").style.width = `${tiempoPercent}%`;
+        
+        if(tiempoPercent <= 0) {
+            clearInterval(relojInterval);
+            ejecutarFallo("¡Se acabó el tiempo! ⏰");
+        }
+    }, tick);
+}
+
+function procesarRespuesta(seleccionada) {
+    clearInterval(relojInterval);
+    if(seleccionada === ejercicioActual.c) {
+        reproducirSonido("correcto");
+        puntos += 2;
+        document.getElementById("vicuna-avatar").textContent = "🦙🎉";
+        document.getElementById("vicuna-avatar").style.transform = "scale(1.2)";
+        document.getElementById("burbuja-dialogo").textContent = "¡Excelente! 🌟";
+        
+        setTimeout(cargarNuevoDesafio, 1000);
+    } else {
+        ejecutarFallo("¡Oh no, intenta otra vez! ❌");
+    }
+}
+
+function ejecutarFallo(motivo) {
+    reproducirSonido("incorrecto");
+    vidas--;
+    actualizarMarcadorVidas();
+    
+    document.getElementById("vicuna-avatar").textContent = "🦙🥺";
+    document.getElementById("burbuja-dialogo").textContent = motivo;
+
+    if(vidas <= 0) {
+        setTimeout(() => terminarPartida(false), 1200);
+    } else {
+        setTimeout(cargarNuevoDesafio, 1500);
+    }
+}
+
+function actualizarMarcadorVidas() {
+    let htmlCorazones = "";
+    for(let i=0; i<3; i++) htmlCorazones += i < vidas ? "❤️ " : "🖤 ";
+    document.getElementById("txt-vidas").innerHTML = htmlCorazones;
+}
+
+// EFECTO VISUAL DE LLUVIA DE ESTRELLAS DE COLORES
+function lanzarLluviaEstrellas() {
+    const capa = document.getElementById("contenedor-estrellas");
+    capa.classList.remove("oculto");
+    capa.innerHTML = "";
+    
+    const estrellasSimbolos = ["⭐", "🌟", "✨", "💫"];
+    const colores = ["#ffd166", "#06d6a0", "#118ab2", "#ff7043", "#ef476f"];
+
+    for (let i = 0; i < 40; i++) {
+        const star = document.createElement("div");
+        star.className = "estrella-fx";
+        star.textContent = estrellasSimbolos[Math.floor(Math.random() * estrellasSimbolos.length)];
+        star.style.left = Math.random() * 100 + "%";
+        star.style.top = "-50px";
+        star.style.animationDelay = Math.random() * 2 + "s";
+        star.style.color = colores[Math.floor(Math.random() * colores.length)];
+        capa.appendChild(star);
+    }
+}
+
+function terminarPartida(ganado) {
+    clearInterval(relojInterval);
+    document.getElementById("pantalla-juego").classList.add("oculto");
+    document.getElementById("pantalla-final").classList.remove("oculto");
+
+    const titulo = document.getElementById("titulo-final");
+    const emoji = document.getElementById("emojon-final");
+    const mensaje = document.getElementById("mensaje-final");
+
+    if(ganado) {
+        titulo.textContent = "¡VICTORIA TOTAL! 🏆";
+        emoji.textContent = "👑🦙🥇";
+        mensaje.textContent = `¡Impresionante, ${nombreJugador}! Superaste los 3 niveles de sumas de la I.E.E. Andrés Avelino Cáceres. ¡Eres un genio!`;
+        titulo.style.color = "var(--verde-pasto)";
+        lanzarLluviaEstrellas();
+    } else {
+        titulo.textContent = "¡Sigue Intentando! 💪";
+        emoji.textContent = "🦙🎒";
+        mensaje.textContent = `Buen trabajo, ${nombreJugador}. Llegaste hasta el Nivel ${nivelActual} y sumaste ${puntos} puntos. ¡Vuelve a intentarlo!`;
+        titulo.style.color = "var(--rojo-carmin)";
+    }
+}
+
+function reiniciarJuego() {
+    document.getElementById("contenedor-estrellas").classList.add("oculto");
+    document.getElementById("pantalla-final").classList.add("oculto");
+    document.getElementById("pantalla-inicio").classList.remove("oculto");
+    document.getElementById("nombre-jugador").value = "";
+}

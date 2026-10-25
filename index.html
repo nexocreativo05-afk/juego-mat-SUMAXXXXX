@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SUMAXXXXX - I.E. Andrés Avelino Cáceres</title>
+    <link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+
+    <!-- CONTENEDOR DE LA LLUVIA DE ESTRELLAS -->
+    <div id="contenedor-estrellas" class="estrellas-capa oculto"></div>
+
+    <div class="juego-contenedor">
+        <!-- PANTALLA DE INICIO (PORTADA CON FOTOS) -->
+        <div id="pantalla-inicio" class="pantalla">
+            <div class="portada-overlay"></div>
+            <div class="portada-contenido">
+                <div class="colegio-header">🏫 I.E. ANDRÉS AVELINO CÁCERES - COSME</div>
+                
+                <!-- Insignia oficial del colegio -->
+                <img src="insignia.png" class="insignia-colegio" alt="Insignia del Colegio">
+                
+                <h1>🦙 SUMAXXXXX ✨</h1>
+                <p class="subtitulo">¡Aprende a sumar jugando!</p>
+                
+                <div class="caja-registro">
+                    <label for="nombre-jugador">📝 Escribe tu nombre amiguito(a):</label>
+                    <input type="text" id="nombre-jugador" placeholder="Tu nombre aquí..." maxlength="12">
+                </div>
+
+                <button class="btn-jugar animation-pulso" onclick="validarEIniciar()">¡JUGAR AHORA! 🚀</button>
+                <div class="creditos">Elaborado por Diana Violeta Peña Silvestre</div>
+            </div>
+        </div>
+
+        <!-- PANTALLA PRINCIPAL DEL JUEGO -->
+        <div id="pantalla-juego" class="pantalla oculto">
+            <div class="marcador-superior">
+                <div class="info-bloque">Nivel <span id="txt-nivel">1</span></div>
+                <div class="info-bloque">Pts: <span id="txt-puntos">0</span>/30</div>
+                <div class="info-bloque" id="txt-vidas">❤️ ❤️ ❤️</div>
+            </div>
+
+            <div class="progreso-barra"><div id="barra-tiempo"></div></div>
+
+            <div class="contenedor-personaje">
+                <div id="vicuna-avatar" class="vicuna">🦙</div>
+                <div id="burbuja-dialogo" class="burbuja">¡Hola! ¿Cuánto es esta suma?</div>
+            </div>
+
+            <div class="panel-pregunta">
+                <h2 id="enunciado-pregunta">0 + 0</h2>
+            </div>
+
+            <div class="panel-opciones" id="contenedor-opciones">
+                <!-- Se inyectan con JS -->
+            </div>
+        </div>
+
+        <!-- PANTALLA DE VICTORIA O FIN -->
+        <div id="pantalla-final" class="pantalla oculto">
+            <h1 id="titulo-final">¡Fin de la Aventura!</h1>
+            <div id="emojon-final" style="font-size: 5rem;">🏆</div>
+            <p id="mensaje-final"></p>
+            
+            <button class="btn-jugar" onclick="reiniciarJuego()">Volver a Jugar 🔄</button>
+            <div class="creditos">Elaborado por Diana Violeta Peña Silvestre</div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

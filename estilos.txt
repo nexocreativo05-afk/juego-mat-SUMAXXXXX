@@ -1,0 +1,293 @@
+:root {
+    --amarillo-brillante: #ffd166;
+    --celeste-cielo: #118ab2;
+    --verde-pasto: #06d6a0;
+    --naranja-brillante: #ff7043;
+    --rojo-carmin: #ef476f;
+    --blanco-puro: #ffffff;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Comic Sans MS', 'Arial Rounded MT Bold', sans-serif;
+    user-select: none;
+}
+
+body {
+    background: linear-gradient(180deg, #ffeb3b, #ff9800);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    overflow: hidden;
+}
+
+.juego-contenedor {
+    background-color: #f7f9fc;
+    width: 100%;
+    max-width: 460px;
+    height: 92vh;
+    max-height: 680px;
+    border-radius: 30px;
+    border: 8px solid var(--blanco-puro);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.25);
+    padding: 15px;
+    position: relative;
+    overflow: hidden;
+}
+
+.pantalla {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    z-index: 5;
+}
+
+/* PORTADA CON LA IMAGEN COLEGIO.PNG */
+#pantalla-inicio {
+    background-image: url('colegio.png');
+    background-size: cover;
+    background-position: center;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.portada-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 235, 59, 0.45); /* Capa infantil translúcida brillante */
+    z-index: 1;
+}
+
+.portada-contenido {
+    position: relative;
+    z-index: 2;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 10px 0;
+}
+
+.insignia-colegio {
+    width: 95px;
+    height: auto;
+    margin: 5px 0;
+    filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.3));
+}
+
+.colegio-header {
+    background-color: var(--celeste-cielo);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    text-align: center;
+}
+
+h1 {
+    font-size: 2.1rem;
+    color: #4a148c;
+    text-shadow: 2px 2px 0px var(--amarillo-brillante);
+}
+
+.subtitulo {
+    color: #4a148c;
+    font-weight: bold;
+    background: rgba(255,255,255,0.8);
+    padding: 2px 10px;
+    border-radius: 10px;
+}
+
+.caja-registro {
+    background: var(--blanco-puro);
+    border: 4px solid var(--naranja-brillante);
+    padding: 12px;
+    border-radius: 20px;
+    width: 90%;
+}
+
+.caja-registro label {
+    display: block;
+    font-size: 0.95rem;
+    color: #333;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.caja-registro input {
+    width: 100%;
+    padding: 8px;
+    font-size: 1.1rem;
+    border: 3px solid #ccc;
+    border-radius: 12px;
+    text-align: center;
+    outline: none;
+    background-color: #fff9c4;
+}
+
+/* VISTA DE JUEGO ACTIVO */
+.marcador-superior {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.info-bloque {
+    background: var(--blanco-puro);
+    padding: 6px 12px;
+    border-radius: 15px;
+    font-weight: bold;
+    border: 2px solid #ddd;
+}
+
+.progreso-barra {
+    width: 100%;
+    background-color: #e0e0e0;
+    height: 14px;
+    border-radius: 10px;
+    margin: 5px 0;
+    overflow: hidden;
+    border: 2px solid var(--blanco-puro);
+}
+
+#barra-tiempo {
+    width: 100%;
+    height: 100%;
+    background-color: var(--verde-pasto);
+    transition: width 0.1s linear;
+}
+
+.contenedor-personaje {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    gap: 10px;
+    background: #e8f5e9;
+    padding: 8px;
+    border-radius: 20px;
+    border: 2px dashed var(--verde-pasto);
+}
+
+.vicuna {
+    font-size: 3.2rem;
+    transition: transform 0.2s;
+}
+
+.burbuja {
+    background: var(--blanco-puro);
+    padding: 8px;
+    border-radius: 15px;
+    font-size: 0.9rem;
+    color: #333;
+    flex: 1;
+    font-weight: bold;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.05);
+}
+
+.panel-pregunta {
+    background-color: var(--blanco-puro);
+    width: 100%;
+    padding: 15px;
+    border-radius: 20px;
+    border: 4px solid var(--naranja-brillante);
+}
+
+#enunciado-pregunta {
+    font-size: 2.6rem;
+    color: #222;
+}
+
+.panel-opciones {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    width: 100%;
+}
+
+.btn-opcion {
+    background-color: var(--blanco-puro);
+    border: 4px solid var(--celeste-cielo);
+    color: var(--celeste-cielo);
+    height: 65px; /* Tamaño grande para pulsar con el dedo cómodamente */
+    font-size: 1.6rem;
+    font-weight: bold;
+    border-radius: 18px;
+    cursor: pointer;
+    box-shadow: 0 5px 0 var(--celeste-cielo);
+}
+
+.btn-opcion:active {
+    transform: translateY(5px);
+    box-shadow: 0 0px 0 var(--celeste-cielo);
+}
+
+.btn-jugar {
+    background-color: var(--naranja-brillante);
+    color: var(--blanco-puro);
+    border: none;
+    padding: 12px 30px;
+    font-size: 1.3rem;
+    font-weight: bold;
+    border-radius: 40px;
+    cursor: pointer;
+    box-shadow: 0 5px 0 #d84315;
+}
+
+.btn-jugar:active {
+    transform: translateY(4px);
+    box-shadow: 0 2px 0 #d84315;
+}
+
+.creditos {
+    font-size: 0.78rem;
+    color: #4a148c;
+    font-weight: bold;
+    background: rgba(255,255,255,0.7);
+    padding: 2px 8px;
+    border-radius: 8px;
+}
+
+.oculto { display: none !important; }
+
+/* CAPA DE ESTRELLAS PARA LA VICTORIA */
+.estrellas-capa {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 99;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.estrella-fx {
+    position: absolute;
+    font-size: 24px;
+    animation: caerEstrella 2.5s linear forwards;
+}
+
+@keyframes caerEstrella {
+    0% { transform: translateY(-50px) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(700px) rotate(360deg); opacity: 0; }
+}
+
+.animation-pulso { animation: pulso 1.5s infinite; }
+@keyframes pulso {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.04); }
+    100% { transform: scale(1); }
+}
